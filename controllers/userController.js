@@ -14,6 +14,19 @@ const create = async (req, res, next) => {
   }
 };
 
+const getAll = async (_req, res, next) => {
+  try {
+    const allUsers = await User.findAll({
+      attributes: { exclude: ['password'] },
+    });
+
+    return res.status(200).json(allUsers);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   create,
+  getAll
 };
