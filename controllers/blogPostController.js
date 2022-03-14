@@ -1,4 +1,5 @@
-const { BlogPost, PostCategory } = require('../models');
+const { Op } = require('sequelize');
+const { BlogPost, PostCategory, Category, User } = require('../models');
 const {checkCategory} = require('../helper/checkCategory')
 
 const create = async (req, res, next) => {
@@ -56,10 +57,32 @@ const getById = async (req, res, next) => {
   }
 };
 
+const getByTerm = async (req, res, next) => {
+  try {
+    const { q } = req.query;
+    const postsByTerm = await BlogPost.findAll({
+      where: {
+        [Op.or]: [
+          { title: { [Op.like]: `%${q}%` } },
+          { content: { [Op.like]: `%${q}%` } },
+        ],
+      },
+      include: [
+        { model: User, as: 'user', attributes: { exclude: ['password'] } },
+        { model: Category, as: 'categories', through: { attributes: [] } },
+      ],
+    });
+    return res.status(200).json(postsByTerm);
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 
 module.exports = {
   create,
   getAll,
-  getById
+  getById,
+  getByTerm
   };
