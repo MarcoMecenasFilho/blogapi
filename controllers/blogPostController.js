@@ -101,6 +101,27 @@ const update = async (req, res, next) => {
   }
 };
 
+const exclude = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { userId } = req.tokenData;
+    const postOwnerId = await BlogPost.findOne({ where: { id } });
+
+    if (!postOwnerId) {
+      return res.status(404).json({ message: 'Post does not exist' });
+    }
+    if (postOwnerId.id !== userId) {
+      return res.status(401).json({ message: 'Unauthorized user' });
+    }
+
+    await BlogPost.destroy({ where: { id } });
+
+    return res.status(204).json({});
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 
 module.exports = {
@@ -108,5 +129,6 @@ module.exports = {
   getAll,
   getById,
   getByTerm,
-  update
+  update,
+  exclude
   };
