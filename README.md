@@ -270,155 +270,33 @@ Para deletar seu usuário deve passar user/me
 
 + Response 204
 
-### Atualizar /products/id  [PUT]
+# Login [/login]
+
+### Login /login  [POST]
 
 Passamos o id do produto que queremos atualizar /products/4
 
 + Request (application/json)
 
+     + Headers (Token fictício)
+
+            {           
+                "Authorization": "MywiZXhwIjoxNjQ3NDQwNjIzfQ.osA0qOI5CgJFkMqubqT7Vu7AAl5lx"
+            }
+
     + body
 
-            {  
-                "name": "blusa verde",
-                "quantity": 300
+            {
+                "email": "zeca@email.com",
+                "password": "123456"
             }
 
 + Response 200 (application/json)
 
-          {
-            "id": 4,
-            "name": "blusa verde",
-            "quantity": 300
+          {           
+              "token": "MywiZXhwIjoxNjQ3NDQwNjIzfQ.osA0qOI5CgJFkMqubqT7Vu7AAl5lx"
           }
 
-Passamos o id de um  produto que não existe /products/89
-
-+ Request (application/json)
-
-    + body
-
-            {  
-                "name": "blusa verde",
-                "quantity": 300
-            }
-
-+ Response 404 (application/json)
-
-          {
-            "message": "Product not found"
-          }
-
-#### Quando as validações falham
-
-Quando "name" não é passado.
-
-+ Request (application/json)
-
-    + body
-
-            {           
-                "quantity": 300
-            }
-+ Response 400 (application/json)
-
-          {
-              "message": "\"name\" is required" 
-          }
-
-Quando "name" não é uma string.
-
-+ Request (application/json)
-
-    + body
-
-            {        
-                "name": 200,   
-                "quantity": 300
-            }
-+ Response 422 (application/json)
-
-          {
-              "message": "\"name\" must be a string"
-          }
-
-Quando "name" possui menos de 5 caracteres.
-
-+ Request (application/json)
-
-    + body
-
-            {        
-                "name": "cas",   
-                "quantity": 300
-            }
-+ Response 422 (application/json)
-
-          {
-              "message": "\"name\" length must be at least 5 characters long"
-          }
-
-Quando "quantity" não é passado.
-
-+ Request (application/json)
-
-    + body
-
-            {        
-                "name": "camisa azul"
-            }
-+ Response 400 (application/json)
-
-          {
-              "message": "\"quantity\" is required"
-          }
-
-Quando "quantity" não é um number.
-
-+ Request (application/json)
-
-    + body
-
-            {        
-                "name": "camisa azul",
-                "quantity": "300"
-            }
-+ Response 422 (application/json)
-
-          {
-              "message": "\"quantity\" must be a number"
-          }
-
-Quando "quantity" não é um numero inteiro.
-
-+ Request (application/json)
-
-    + body
-
-            {        
-                "name": "camisa azul",
-                "quantity": 3.22
-            }
-+ Response 422 (application/json)
-
-          {
-               "message": "\"quantity\" must an integer"
-          }
-
-Quando "quantity" não é um numero positivo.
-
-+ Request (application/json)
-
-    + body
-
-            {        
-                "name": "camisa azul",
-                "quantity": -2
-            }
-+ Response 422 (application/json)
-
-          {
-                "message": "\"quantity\" must be greater than or equal to 1"
-          }
 
 ### Deletar /products/id  [DELETE]
 
@@ -435,6 +313,56 @@ Id de um  produto que não existe /products/89
             "message": "Product not found"
           }
 
+# Categorias [/categories]
+
+### Listar /categories [GET]
+
+Listar todos as as categorias salvos no banco de dados  /categories
+
++ Request (application/json)
+
+     + Headers (Token fictício)
+
+            {           
+                "Authorization": "MywiZXhwIjoxNjQ3NDQwNjIzfQ.osA0qOI5CgJFkMqubqT7Vu7AAl5lx"
+            }
+
++ Response 200 (application/json)
+
+          [
+              {
+                  "id": 1,
+                  "name": "Inovação"
+              },
+              {
+                  "id": 2,
+                  "name": "Escola"
+              }
+          ]
+
+### Criar /categories [POST]
+
+Criar categoria no banco de dados  /categories
+
++ Request (application/json)
+
+    + Headers (Token fictício)
+
+            {           
+                "Authorization": "MywiZXhwIjoxNjQ3NDQwNjIzfQ.osA0qOI5CgJFkMqubqT7Vu7AAl5lx"
+            }
+    + body
+
+        {
+            "name" : "cervejinha gelada"
+        }
+
++ Response 200 (application/json)
+
+          {
+              "id": 3,
+              "name": "cervejinha gelada"
+          }
 
 # Vendas [/sales]
 
