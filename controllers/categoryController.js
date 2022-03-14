@@ -14,7 +14,15 @@ const create = async (req, res, next) => {
   }
 };
 
+const getAll = async (_req, res, next) => {
+  try {
+    const allCategories = await Category.findAll();
+    return res.status(200).json(allCategories);
+  } catch (error) {
+    next(error);
+  }
+};
 
 module.exports = { 
   create, 
-};
+  getAll };
