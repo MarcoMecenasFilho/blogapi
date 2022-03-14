@@ -1,6 +1,6 @@
 const { Op } = require('sequelize');
 const { BlogPost, PostCategory, Category, User } = require('../models');
-const {checkCategory} = require('../helper/checkCategory')
+const checkCategory = require('../helper/checkCategory')
 
 const create = async (req, res, next) => {
   try {

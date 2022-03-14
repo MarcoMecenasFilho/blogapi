@@ -1,12 +1,9 @@
 const { Category} = require('../models');
 
-const checkCategory = async (categoryIds) => {
+module.exports = async (categoryIds) => {
   const allCategoriesRegistered = await Category.findAll();
   const allCategoriesRegisteredIds = await allCategoriesRegistered.map(({ id }) => id);
   const allCategoriesExist = categoryIds.every((ids) => allCategoriesRegisteredIds.includes(ids));
   return allCategoriesExist
 }
 
-module.export = {
-  checkCategory
-}
