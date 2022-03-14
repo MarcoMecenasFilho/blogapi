@@ -78,11 +78,35 @@ const getByTerm = async (req, res, next) => {
   }
 };
 
+const update = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const postOwnerId = await BlogPost.findByPk(id);
+    const { userId } = req.tokenData;
+    if (!postOwnerId) return res.status(404).json({ message: 'Post does not exist ' });
+  
+    if (postOwnerId.userId !== userId) {
+      return res.status(401).json({ message: 'Unauthorized user' }); 
+}
+
+    await BlogPost.update(req.body, { where: { id } });
+    const postById = await BlogPost.findOne({
+      where: { id },
+      include: [{ model: Category, as: 'categories', through: { attributes: [] } }],
+    });
+
+    return res.status(200).json(postById);
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 
 module.exports = {
   create,
   getAll,
   getById,
-  getByTerm
+  getByTerm,
+  update
   };
