@@ -9,7 +9,7 @@ const create = async (req, res, next) => {
     const published = new Date();
     const updated = published;
 
-    const categoriesChecked = checkCategory(categoryIds)
+    const categoriesChecked = await checkCategory(categoryIds)
     if (!categoriesChecked) {
       return res.status(400).json({ message: '"categoryIds" not found' });
     }
