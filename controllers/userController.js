@@ -43,8 +43,20 @@ const getById = async (req, res, next) => {
   }
 };
 
+const excludeMe = async (req, res, next) => {
+  try {
+    const { userId } = req.tokenData;
+    await User.destroy({ where: { id: userId } });
+  
+      return res.status(204).json({});
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   create,
   getAll,
-  getById
+  getById,
+  excludeMe
 };
