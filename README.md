@@ -16,7 +16,7 @@
 -  Cadastro de usuários,  posts, categorias.
 -  Sistema de login através de token criptografados
 -  Atualizar e deletar posts
--  Sistema de segurança em que apenas o dono do post pode deletar ou apagar
+-  Sistema de segurança em que apenas o dono do post pode deletar ou editar
 <br>
 ## 🛠 Tecnologias
 
@@ -30,6 +30,7 @@ As seguintes ferramentas foram utilizadas na construção do projeto:
 - [Joi](https://joi.dev/)
 - [Mysql2](https://www.npmjs.com/package/mysql2)
 - [Nodemon](https://www.npmjs.com/package/nodemon)
+- [JWT](https://jwt.io/)
 
 
 <br>
@@ -83,6 +84,7 @@ Requisições para a API devem seguir os padrões:
 | `201` | Criado com sucesso com sucesso.|
 | `204` | Sem conteúdo.|
 | `400` | Erros de validação ou os campos informados não existem no sistema.|
+| `409` | Conflito com banco de dados|
 | `404` | Registro pesquisado não encontrado (Not found).|
 | `422` | Dados informados estão fora do escopo definido para o campo.|
 
@@ -90,6 +92,45 @@ Requisições para a API devem seguir os padrões:
 <br>
 
 ## EndPoints
+
+# Token
+
+Todas as rotas (menos /user [POST] e /login [POTS]) precisam de token.
+
+## Validações
+Quando o token não é passado
+
++ Request (application/json)
+
+    + Headers ()
+
+            {           
+                
+            }
+
++ Response 401 (application/json)
+
+        {
+            message: "Token not found"
+        }
+
+Quando o token  é invalido ou expirou
+
++ Request (application/json)
+
+    + Headers ()
+
+            {           
+                "Authorization": MywiZXhwIjoxNjQ3NDQwNjIzfQ.osA0qOI5CgJFkMqubqT7Vu7AAl5lx
+            }
+
++ Response 401 (application/json)
+
+        {
+            message: "Expired or invalid token"
+        }
+
+
 
 # Usuários [/user]
 
@@ -256,7 +297,7 @@ Listar usuários por um id específico /user/1
               "message": "User does not exist"
           }
 
-### Deletar /products/me  [DELETE]
+### Deletar /post/me  [DELETE]
 
 Para deletar seu usuário deve passar user/me
 
@@ -296,24 +337,6 @@ Passamos o id do produto que queremos atualizar /products/4
           {           
               "token": "MywiZXhwIjoxNjQ3NDQwNjIzfQ.osA0qOI5CgJFkMqubqT7Vu7AAl5lx"
           }
-
-
-### Deletar /products/id  [DELETE]
-
-Para deletar um produto passamos o id desejado /products/4
-
-
-+ Response 204
-
-Id de um  produto que não existe /products/89
-
-+ Response 404 (application/json)
-
-          {
-            "message": "Product not found"
-          }
-
-# Categorias [/categories]
 
 ### Listar /categories [GET]
 
@@ -364,529 +387,482 @@ Criar categoria no banco de dados  /categories
               "name": "cervejinha gelada"
           }
 
-# Vendas [/sales]
+# PostsBlogs [/post]
 
-### Listar /sales [GET]
+### Listar /post [GET]
 
-Listar todos as vendas salvos no banco de dados  /sales
+Listar todos os posts salvos no banco de dados  /post
 
++ Request (application/json)
+
+    + Headers (Token fictício)
+
+            {           
+                "Authorization": "MywiZXhwIjoxNjQ3NDQwNjIzfQ.osA0qOI5CgJFkMqubqT7Vu7AAl5lx"
+            }
 + Response 200 (application/json)
 
-          [
+         [
               {
-                "saleId": 1,
-                "date": "2022-03-02T18:45:07.000Z",
-                "productId": 1,
-                "quantity": 5
+                  "id": 1,
+                  "title": "Post do Ano",
+                  "content": "Melhor post do ano",
+                  "userId": 1,
+                  "published": "2011-08-01T19:58:00.000Z",
+                  "updated": "2011-08-01T19:58:51.000Z",
+                  "user": {
+                      "id": 1,
+                      "displayName": "Lewis Hamilton",
+                      "email": "lewishamilton@gmail.com",
+                      "image": "https://upload.wikimedia.org"
+                  },
+                  "categories": [
+                      {
+                          "id": 1,
+                          "name": "Inovação"
+                      }
+                  ]
               },
               {
-                "saleId": 1,
-                "date": "2022-03-02T18:45:07.000Z",
-                "productId": 2,
-                "quantity": 10
-              },
-              {
-                "saleId": 2,
-                "date": "2022-03-02T18:45:07.000Z",
-                "productId": 3,
-                "quantity": 15
+                  "id": 2,
+                  "title": "Vamos que vamos",
+                  "content": "Foguete não tem ré",
+                  "userId": 1,
+                  "published": "2011-08-01T19:58:00.000Z",
+                  "updated": "2011-08-01T19:58:51.000Z",
+                  "user": {
+                      "id": 1,
+                      "displayName": "Lewis Hamilton",
+                      "email": "lewishamilton@gmail.com",
+                      "image": "https://upload.wikimedia.org"
+                  },
+                  "categories": [
+                      {
+                          "id": 2,
+                          "name": "Escola"
+                      }
+                  ]
               }
           ]
 
+### Listar por id /post/id [GET]
 
+Listar um post por um id específico /post/1
++ Headers (Token fictício)
 
-### Listar por id /sales/id [GET]
-
-Listar venda por um id específico /sales/2
+            {           
+                "Authorization": "MywiZXhwIjoxNjQ3NDQwNjIzfQ.osA0qOI5CgJFkMqubqT7Vu7AAl5lx"
+            }
 
 + Response 200 (application/json)
 
-          [
-              {
-                "date": "2022-03-02T18:45:07.000Z",
-                "productId": 2,
-                "quantity": 15
-              }
-          ]
+          {
+                "id": 1,
+                "title": "Post do Ano",
+                "content": "Melhor post do ano",
+                "userId": 1,
+                "published": "2011-08-01T19:58:00.000Z",
+                "updated": "2011-08-01T19:58:51.000Z",
+                "user": {
+                    "id": 1,
+                    "displayName": "Lewis Hamilton",
+                    "email": "lewishamilton@gmail.com",
+                    "image": "https://upload.wikimedia.org"
+                },
+                "categories": [
+                    {
+                        "id": 1,
+                        "name": "Inovação"
+                    }
+                ]
+            }
+
+
           
-### Quando o produto não existe /products/5
-          
+### Quando o post não existe /post/5
+      + Headers (Token fictício)
+
+            {           
+                "Authorization": "MywiZXhwIjoxNjQ3NDQwNjIzfQ.osA0qOI5CgJFkMqubqT7Vu7AAl5lx"
+            }
+
 + Response 404 (application/json)
 
       [
         {
-          "message": "Product not found"
+          "message": "Post does not exist"
         }
       ]  
 
-### Criar  /sales/id [POST]
+
+### Listar por query [GET]
+
+Utilizando uma query na url /post/search/?q=vamos
+
+    + Headers (Token fictício)
+
+        {           
+            "Authorization": "MywiZXhwIjoxNjQ3NDQwNjIzfQ.osA0qOI5CgJFkMqubqT7Vu7AAl5lx"
+        }
+
+    + Response 200 (application/json)
+
+    [
+            {
+                "id": 2,
+                "title": "Vamos que vamos",
+                "content": "Foguete não tem ré",
+                "userId": 1,
+                "published": "2011-08-01T19:58:00.000Z",
+                "updated": "2011-08-01T19:58:51.000Z",
+                "user": {
+                    "id": 1,
+                    "displayName": "Lewis Hamilton",
+                    "email": "lewishamilton@gmail.com",
+                    "image": "https://upload.wikimedia.org/"
+                },
+                "categories": [
+                    {
+                        "id": 2,
+                        "name": "Escola"
+                    }
+                ]
+            }
+    ]
+
+Quando  passamos  query vazia, retorna todos os dados 
+do banco /post/search/?q=
+
+
+    + Headers (Token fictício)
+
+        {           
+            "Authorization": "MywiZXhwIjoxNjQ3NDQwNjIzfQ.osA0qOI5CgJFkMqubqT7Vu7AAl5lx"
+        }
+
+    + Response 200 (application/json)
+
+        [
+                {
+                    "id": 1,
+                    "title": "Post do Ano",
+                    "content": "Melhor post do ano",
+                    "userId": 1,
+                    "published": "2011-08-01T19:58:00.000Z",
+                    "updated": "2011-08-01T19:58:51.000Z",
+                    "user": {
+                        "id": 1,
+                        "displayName": "Lewis Hamilton",
+                        "email": "lewishamilton@gmail.com",
+                        "image": "https://upload.wikimedia.org
+                    },
+                    "categories": [
+                        {
+                            "id": 1,
+                            "name": "Inovação"
+                        }
+                    ]
+                },
+                {
+                    "id": 2,
+                    "title": "Vamos que vamos",
+                    "content": "Foguete não tem ré",
+                    "userId": 1,
+                    "published": "2011-08-01T19:58:00.000Z",
+                    "updated": "2011-08-01T19:58:51.000Z",
+                    "user": {
+                        "id": 1,
+                        "displayName": "Lewis Hamilton",
+                        "email": "lewishamilton@gmail.com",
+                        "image": "https://upload.wikimedia.org
+                    },
+                    "categories": [
+                        {
+                            "id": 2,
+                            "name": "Escola"
+                        }
+                    ]
+                }
+        ]
+
+Quando não passa query /post/search
+
+    + Headers (Token fictício)
+
+        {           
+            "Authorization": "MywiZXhwIjoxNjQ3NDQwNjIzfQ.osA0qOI5CgJFkMqubqT7Vu7AAl5lx"
+        }
+     + Response 200 (application/json)
+
+        [
+
+        ]
+
+
+### Criar  /post [POST]
 
 + Request (application/json)
 
-  + body
+    + Headers (Token fictício)
 
-        [
-          {
-            "productId": 1,
-            "quantity": 2
-          },
-          {
-            "productId": 2,
-            "quantity": 5
-          }
-        ]
+            {           
+                "Authorization": "MywiZXhwIjoxNjQ3NDQwNjIzfQ.osA0qOI5CgJFkMqubqT7Vu7AAl5lx"
+            }
+
+    + body 
+        {
+          "title": "pagode e felicidade",
+          "content": "tudo muto bom",
+          "categoryIds": [1, 2]
+        }
 
 + Response 201 (application/json)
 
           {
               "id": 3,
-              "itemsSold": [
-                {
-                  "productId": 1,
-                  "quantity": 2
-                },
-                {
-                  "productId": 2,
-                  "quantity": 5
-                }
-              ]
-          }
+              "userId": 4,
+              "title": "pagode e felicidade",
+              "content": "tudo muto bom"
+          }       
 
-Quando a quantidade do produto não existe no banco de dados.
+Quando a categoria  não existe no banco de dados.
 
 + Request (application/json)
 
-    + body
+  + Headers (Token fictício)
 
-          [
-            {
-              "productId": 1,
-              "quantity": 200
-            },
-            {
-              "productId": 2,
-              "quantity": 1
+            {           
+                "Authorization": "MywiZXhwIjoxNjQ3NDQwNjIzfQ.osA0qOI5CgJFkMqubqT7Vu7AAl5lx"
             }
-              {
-              "productId": 3,
-              "quantity": 100
-            }
-          ]
-
-+ Response 422 (application/json)
-
-          {
-              "message": "Such amount is not permitted to sell. ProductId: 1, 3"
-          }
-
-Quando o id do produto não existe no banco de dados.
-
-+ Request (application/json)
 
     + body
 
-          [
-            {
-              "productId": 1,
-              "quantity": 2
-            },
-            {
-              "productId": 67,
-              "quantity": 1
-            },
-              {
-              "productId": 99,
-              "quantity": 1
-            }
-          ]
+          
+          {
+              "title": "pagode e felicidade",
+              "content": "tudo muto bom",
+              "categoryIds": [1, 9]
+          }
 
-+ Response 404 (application/json)
+
++ Response 400 (application/json)
 
           {
-              "message": "Product not found. ProductId: 67, 99"
+              " "message": "\"categoryIds\" not found"
           }
+
 
 #### Quando as validações falham
 
-Quando "quantity" não é passado.
+
+Quando "title" é passado em branco ou  não é passado.
 
 + Request (application/json)
 
++ Headers (Token fictício)
+
+            {           
+                "Authorization": "MywiZXhwIjoxNjQ3NDQwNjIzfQ.osA0qOI5CgJFkMqubqT7Vu7AAl5lx"
+            }
+    
     + body
 
-          [
-            {    
-                "productId: 1
-            }
-          ]
+          {
+              "content": "tudo muto bom",
+              "categoryIds": [1, 9]
+          }
 
 + Response 400 (application/json)
 
           {
-              "message": "\"quantity\" is required"
+              "message": "\"title\" is required"
           }
 
-Quando "quantity" não é um number.
+Quando "content" é passado em branco ou  não é passado.
 
 + Request (application/json)
 
-    + body
++ Headers (Token fictício)
 
-          [
-            {        
-                "productId: 1,
-                "quantity": "300"
+            {           
+                "Authorization": "MywiZXhwIjoxNjQ3NDQwNjIzfQ.osA0qOI5CgJFkMqubqT7Vu7AAl5lx"
             }
-          ]
-
-+ Response 422 (application/json)
+    
+    + body
 
           {
-              "message": "\"quantity\" must be a number"
+              "title": "pagode e felicidade",
+              "categoryIds": [1, 9]
           }
-
-Quando "quantity" não é um numero inteiro.
-
-+ Request (application/json)
-
-    + body
-
-          [
-            {        
-                "productId: 1,
-                "quantity": 3.22
-            }
-          ]
-
-+ Response 422 (application/json)
-
-          {
-               "message": "\"quantity\" must an integer"
-          }
-
-Quando "quantity" não é um numero positivo.
-
-+ Request (application/json)
-
-    + body
-
-          [
-            {        
-                "productId: 1,
-                "quantity": -2
-            }
-          ]
-
-+ Response 422 (application/json)
-
-          {
-                "message": "\"quantity\" must be greater than or equal to 1"
-          }
-
-Quando "productId" não é passado.
-
-+ Request (application/json)
-
-    + body
-
-          [
-            {    
-                "quantity": 1
-            }
-          ]
 
 + Response 400 (application/json)
 
           {
-              "message": "\"productId\" is required"
+              "message": "\"content\" is required"
           }
 
-Quando "productId" não é um number.
+
+Quando "categoryIds" não é passado.
 
 + Request (application/json)
 
-    + body
++ Headers (Token fictício)
 
-          [
-            {        
-                "productId": "3"
-                "quantity": 1,
+            {           
+                "Authorization": "MywiZXhwIjoxNjQ3NDQwNjIzfQ.osA0qOI5CgJFkMqubqT7Vu7AAl5lx"
             }
-          ]
+    
+    + body
 
-+ Response 422 (application/json)
-
-          {
-              "message": "\"productId\" must be a number"
+          {   
+              "content": "tudo muto bom",
+              "title": "pagode e felicidade",
           }
 
-Quando "productId" não é um numero inteiro.
++ Response 400 (application/json)
+
+          {
+              "message": "\"categoryIds\" is required"
+          }
+
+
+### Atualizar  /post/id [PUT]
+
+Atualizar um post  /post/3
 
 + Request (application/json)
 
-    + body
+    + Headers (Token fictício)
 
-          [  
-            {        
-                "productId": 3.22
-                "quantity: 1,
+            {           
+                "Authorization": "MywiZXhwIjoxNjQ3NDQwNjIzfQ.osA0qOI5CgJFkMqubqT7Vu7AAl5lx"
             }
-          ]
-
-+ Response 422 (application/json)
-
-          {
-               "message": "\"productId\" must an integer"
-          }
-
-Quando "productId" não é um numero positivo.
-
-+ Request (application/json)
 
     + body
 
-          [
-              {        
-                "productId": -2,
-                "quantity: 1
-              }
-          ]
-
-+ Response 422 (application/json)
-
-          {
-                "message": "\"productId\" must be greater than or equal to 1"
-          }
-
-### Atualizar  /sales/id [PUT]
-
-+ Request (application/json)
-
-    + body
-
-          [
             {
-              "productId": 1,
-              "quantity": 1
+              "title": "Vou embora",
+              "content": "Amanhã eu volto"
             }
-          ]
 
 + Response 200 (application/json)
 
           {
-              "saleId": 1,
-              "itemUpdate": [
-                {
-                  "productId": 1,
-                  "quantity": 1
-                }
+              "id": 3,
+              "title": "Vou Embora",
+              "content": "Amanhã eu volto",
+              "userId": 4,
+              "published": "2022-03-14T20:43:45.000Z",
+              "updated": "2022-03-14T20:43:45.000Z",
+              "categories": [
+                  {
+                      "id": 1,
+                      "name": "Inovação"
+                  },
+                  {
+                      "id": 2,
+                      "name": "Escola"
+                  }
               ]
           }
 
-Quando a quantidade do produto não existe no banco de dados.
+#### Quando você não foi o criador do post  /post/1
 
 + Request (application/json)
 
+    + Headers (Token fictício)
+
+            {           
+                "Authorization": "MywiZXhwIjoxNjQ3NDQwNjIzfQ.osA0qOI5CgJFkMqubqT7Vu7AAl5lx"
+            }
+
     + body
 
-          [
             {
-              "productId": 1,
-              "quantity": 200
+              "title": "Vou embora",
+              "content": "Amanhã eu volto"
             }
-          ]
 
-+ Response 422 (application/json)
++ Response 200 (application/json)
 
-          {
-              "message": "Such amount is not permitted to sell"
-          }
+      {
+          "message": "Unauthorized user"
+      }
 
-Quando o id do produto não existe no banco de dados.
+
+#### Quando o id do post não existe no banco de dados.
+
+Atualizar um post  /post/9
 
 + Request (application/json)
 
+    + Headers (Token fictício)
+
+            {           
+                "Authorization": "MywiZXhwIjoxNjQ3NDQwNjIzfQ.osA0qOI5CgJFkMqubqT7Vu7AAl5lx"
+            }
+
     + body
 
-            [
-              {
-                "productId": 89,
-                "quantity": 2
-              }
-            ]
+            {
+              "title": "Vou embora",
+              "content": "Amanhã eu volto"
+            }
 
 + Response 404 (application/json)
 
-          {
-              "message": "Product not found"
-          }
+    {
+        "message": "Post does not exist "
+    }
 
-#### Quando as validações falham
-
-Quando "quantity" não é passado.
+### Deletar  /post/id [DELETE]
+ Quando deleta um post post/1
 
 + Request (application/json)
 
-    + body
+    + Headers (Token fictício)
 
-          [
-            {    
-                "productId: 1
+            {           
+                "Authorization": "MywiZXhwIjoxNjQ3NDQwNjIzfQ.osA0qOI5CgJFkMqubqT7Vu7AAl5lx"
             }
-          ]
+    
+    + Response 204 (application/json)
 
-+ Response 400 (application/json)
-
-          {
-              "message": "\"quantity\" is required"
-          }
-
-Quando "quantity" não é um number.
+ Quando o id não exste um post post/99
 
 + Request (application/json)
 
-    + body
+    + Headers (Token fictício)
 
-          [
-            {        
-                "productId: 1,
-                "quantity": "300"
+            {           
+                "Authorization": "MywiZXhwIjoxNjQ3NDQwNjIzfQ.osA0qOI5CgJFkMqubqT7Vu7AAl5lx"
             }
-          ]
+    
+    + Response 404 (application/json)
 
-+ Response 422 (application/json)
-
-          {
-              "message": "\"quantity\" must be a number"
-          }
-
-Quando "quantity" não é um numero inteiro.
-
-+ Request (application/json)
-
-    + body
-
-          [
-            {        
-                "productId: 1,
-                "quantity": 3.22
+            { 
+                  message: 'Post does not exist' 
             }
-          ]
 
-+ Response 422 (application/json)
-
-          {
-               "message": "\"quantity\" must an integer"
-          }
-
-Quando "quantity" não é um numero positivo.
+ Quando o usuário atual não é o criador do post post/1
 
 + Request (application/json)
 
-    + body
+    + Headers (Token fictício)
 
-          [
-            {        
-                "productId: 1,
-                "quantity": -2
+            {           
+                "Authorization": "MywiZXhwIjoxNjQ3NDQwNjIzfQ.osA0qOI5CgJFkMqubqT7Vu7AAl5lx"
             }
-          ]
+    
+    + Response 401 (application/json)
 
-+ Response 422 (application/json)
-
-          {
-                "message": "\"quantity\" must be greater than or equal to 1"
-          }
-
-Quando "productId" não é passado.
-
-+ Request (application/json)
-
-    + body
-
-          [
-            {    
-                "quantity": 1
+            { 
+                  message: 'Unauthorized user' 
             }
-          ]
-
-+ Response 400 (application/json)
-
-          {
-              "message": "\"productId\" is required"
-          }
-
-Quando "productId" não é um number.
-
-+ Request (application/json)
-
-    + body
-
-          [
-            {        
-                "productId": "3"
-                "quantity": 1,
-            }
-          ]
-
-+ Response 422 (application/json)
-
-          {
-              "message": "\"productId\" must be a number"
-          }
-
-Quando "productId" não é um numero inteiro.
-
-+ Request (application/json)
-
-    + body
-
-          [  
-            {        
-                "productId": 3.22
-                "quantity: 1,
-            }
-          ]
-
-+ Response 422 (application/json)
-
-          {
-               "message": "\"productId\" must an integer"
-          }
-
-Quando "productId" não é um numero positivo.
-
-+ Request (application/json)
-
-    + body
-
-          [
-              {        
-                "productId": -2,
-                "quantity: 1
-              }
-          ]
-
-+ Response 422 (application/json)
-
-          {
-                "message": "\"productId\" must be greater than or equal to 1"
-          }
-
-### Deletar /sales/id  [DELETE]
-
-Para deletar um produto passamos o id desejado /products/4
 
 
-+ Response 204
 
-Id de um  produto que não existe /products/89
 
-+ Response 404 (application/json)
-
-          {
-            "message": "Product not found"
-          }
 
 
  - Este projeto foi feito com muita dedicação e carinho por Marco Mecenas  [Entre em contato!](https://www.linkedin.com/in/marcomecenasfilho/).
