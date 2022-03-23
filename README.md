@@ -1,4 +1,4 @@
-<!-- <img src='./images/logo.gif' width="100%"> -->
+<img src='./images/logo.gif' width="100%">
 <br>
 <hr>
 
