@@ -289,7 +289,7 @@ Listar usuários por um id específico /user/1
               "image": "https://upload.wikimedia.org/wikipedia"
           }
           
-  ### Quando o usuário não existe /products/5
+  ### Quando o usuário não existe /user/5
           
   + Response 404 (application/json)
 
@@ -315,8 +315,6 @@ Para deletar seu usuário deve passar user/me
 
 ### Login /login  [POST]
 
-Passamos o id do produto que queremos atualizar /products/4
-
 + Request (application/json)
 
      + Headers (Token fictício)
@@ -340,7 +338,7 @@ Passamos o id do produto que queremos atualizar /products/4
 
 ### Listar /categories [GET]
 
-Listar todos as as categorias salvos no banco de dados  /categories
+Listar todos as categorias salvas no banco de dados  /categories
 
 + Request (application/json)
 
