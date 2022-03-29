@@ -70,10 +70,10 @@ $ npm run allcomand
 Requisições para a API devem seguir os padrões:
 | Método | Descrição |
 |---|---|
-| `GET` | Retorna informações de um ou mais produtos/vendas. |
-| `POST` | Utilizado para criar um novo produto/venda. |
-| `PUT` | Atualiza dados de um produto/venda ou altera sua situação. |
-| `DELETE` | Remove um produto/venda do sistema. |
+| `GET` | Retorna informações|
+| `POST` | Utilizado para criar um novos objetos. |
+| `PUT` | Atualiza dados de um objeto ou altera sua situação. |
+| `DELETE` | Remove um objeto do sistema. |
 
 
 ## Respostas
